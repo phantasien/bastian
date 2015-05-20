@@ -5,7 +5,8 @@ lowercase = $(shell echo $1 | tr A-Z a-z)
 GTEST_LIBS_PATH := deps/gtest/cbuild
 SYS_NAME := $(shell uname -s)
 SYS_NAME_LOWER := $(call lowercase,${SYS_NAME})
-
+SYS_MACHINE := $(shell uname -m)
+ANDROID_NDK_PREBUILT = ${ANDROID_NDK_ROOT}/toolchains/arm-linux-androideabi-4.8/prebuilt/${SYS_NAME_LOWER}-${SYS_MACHINE}
 
 ifeq (${SYS_NAME_LOWER},linux)
 	SYS_CMAKE_FLAGS :=
@@ -33,6 +34,17 @@ test-jsc: ./out/jsc-x64/Debug/test-bastian
 	@./out/jsc-x64/Debug/test-bastian
 
 test: test-v8 test-jsc
+
+android-lib:
+	@CC="${ANDROID_NDK_PREBUILT}/bin/arm-linux-androideabi-gcc" \
+	CXX="${ANDROID_NDK_PREBUILT}/bin/arm-linux-androideabi-g++" \
+  ./tools/gyp_bastian -Dbastian_engine=v8 -Dtarget_arch=arm  -Dandroid_target_platform=14 \
+                 -Darm_version=7 -Dhost_os=mac -DOS=android
+	@make -C out/v8-android_arm
+
+
+
+	
 
 ${GTEST_LIBS_PATH}:
 	@mkdir ${GTEST_LIBS_PATH}
