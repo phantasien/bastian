@@ -6,9 +6,6 @@
       'includes': [
         './common.gypi',
       ],
-      'include_dirs': [
-        './deps/v8/include'
-      ],
       'conditions': [
         ['bastian_engine == "v8"', {
           'dependencies': [

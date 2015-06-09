@@ -20,9 +20,9 @@ clean:
 
 ./out/v8-x64/Debug/test-bastian: ${GTEST_LIBS_PATH}
 	@./tools/gyp_bastian test/test.gyp -Dbastian_project=${CURDIR} -Dbastian_engine=v8 -Dtarget_arch=x64
-	@make -C out/v8-x64
 
 test-v8: ./out/v8-x64/Debug/test-bastian
+	@make -C out/v8-x64
 	@./out/v8-x64/Debug/test-bastian
 
 ./out/jsc-x64/Debug/test-bastian: ${GTEST_LIBS_PATH}

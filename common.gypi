@@ -4,6 +4,9 @@
       'defines': [
         'BASTIAN_V8'
       ],
+      'include_dirs': [
+        './deps/v8/include'
+      ]
     }],
     ['bastian_engine == "jsc"', {
       'defines': [

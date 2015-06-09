@@ -61,7 +61,9 @@ class V8Engine : Engine {
   void Run(const char *);
 
  private:
-  v8_obj_generator obj_generator_;
+  Handle<V8ObjectContext> global_;
+  v8::Persistent<v8::Context> context_;
+
 };
 #endif
 
