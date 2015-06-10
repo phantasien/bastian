@@ -16,6 +16,8 @@ endif
 
 clean:
 	@rm -rf out/Debug/obj.target/bastian
+	@rm -rf build
+	@rm -rf out/jsc-x64
 	@rm -rf ${RUN_TEST}
 
 ./out/v8-x64/Debug/test-bastian: ${GTEST_LIBS_PATH}

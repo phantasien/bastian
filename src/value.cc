@@ -177,8 +177,10 @@ Handle<Value> Value::New(
     JSContextRef context_ref,
     JSValueRef jsc_value,
     JSValueRef* exception_ref) {
+  /****/
   Handle<Value> result = NullValue::New();
   JSStringRef jsc_string;
+  JSObjectRef jsc_object;
   int str_size;
   char* utf8_buffer;
 
@@ -198,6 +200,12 @@ Handle<Value> Value::New(
     JSStringGetUTF8CString(jsc_string, utf8_buffer, str_size);
     result = String::New(utf8_buffer);
     std::free(utf8_buffer);
+  } else if (JSValueIsObject(context_ref, jsc_value)) {
+    jsc_object = JSValueToObject(context_ref, jsc_value, NULL);
+
+    if (JSObjectIsFunction(context_ref, jsc_object)) {
+      result = Function::New(context_ref, jsc_object);
+    }
   }
 
   return result;
@@ -262,5 +270,28 @@ void Function::Call() {
 }
 
 #endif
+
+//
+// JSC Function
+//
+
+#ifdef BASTIAN_JSC
+
+Function::Function(JSContextRef context_ref, JSObjectRef jsc_object)
+    : context_ref_(context_ref), jsc_object_(jsc_object) {
+  type_ = FUNCTION;
+}
+
+Handle<Value> Function::New(JSContextRef context_ref, JSObjectRef jsc_object) {
+  Handle<Value> function(reinterpret_cast<Value*>(new Function (context_ref, jsc_object)));
+  return function;
+}
+
+void Function::Call() {
+  // JSObjectCallAsFunction(context_ref_, jsc_object_, jsc_object_, 0, NULL, NULL);
+}
+
+#endif
+
 
 }  // namespace bastian

@@ -110,6 +110,10 @@ class Function : public Value {
 #ifdef BASTIAN_V8
   static Handle<Value> New(const v8::Local<v8::Function>&);
 #endif
+#ifdef BASTIAN_JSC
+  static Handle<Value> New(JSContextRef context_ref, JSObjectRef jsc_object);
+#endif
+
   double NumberValue();
   std::string StringValue();
 
@@ -118,6 +122,11 @@ class Function : public Value {
 #ifdef BASTIAN_V8
   Function(const v8::Local<v8::Function>&);
   v8::Persistent<v8::Function> v8_function_;
+#endif
+#ifdef BASTIAN_JSC
+  Function(JSContextRef context_ref, JSObjectRef jsc_object);
+  JSObjectRef jsc_object_;
+  JSContextRef context_ref_;
 #endif
 };
 
