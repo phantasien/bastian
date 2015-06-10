@@ -28,7 +28,7 @@ BASTIAN_FUNC(CollectValueResult2) {
 TEST(VALUE_TEST_SUITE, RecognizeFunction) {
   TestContext testContext;
   testContext.AddFunction("collect", CollectValueResult);
-  testContext.RunJS("collect(function () {})");
+  testContext.RunJS("collect(function toto() {})");
   EXPECT_EQ(true, result->IsFunction());
 }
 

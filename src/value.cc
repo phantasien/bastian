@@ -243,6 +243,7 @@ std::string Function::StringValue() {
 
 Function::Function(const v8::Local<v8::Function>& v8_function) {
   v8_function_.Reset(v8::Isolate::GetCurrent(), v8_function);
+  type_ = FUNCTION;
 }
 
 Handle<Value> Function::New(const v8::Local<v8::Function>& v8_function) {
