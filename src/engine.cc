@@ -42,19 +42,22 @@ Handle<Engine> Engine::New(v8_obj_generator obj_generator) {
   return handle;
 }
 
-V8Engine::V8Engine(v8_obj_generator obj_generator)
-  : global_(V8ObjectContext::New()) {
-  obj_generator(global_);
-
-  v8::Handle<v8::Context> context = v8::Context::New(v8::Isolate::GetCurrent(), NULL, global_->ObjectTemplate());
-  context_.Reset(v8::Isolate::GetCurrent(), context);
+V8Engine::V8Engine(v8_obj_generator obj_generator) {
+  obj_generator_ = obj_generator;
 }
 
 void V8Engine::Run(const char * raw_source) {
-  v8::Local<v8::Context> context = v8::Local<v8::Context>::New(v8::Isolate::GetCurrent(), context_);
+  Handle<V8ObjectContext> global = V8ObjectContext::New();
+
+  obj_generator_(global);
+
+  v8::Local<v8::Context> context = v8::Context::New(
+    v8::Isolate::GetCurrent(), NULL, global->ObjectTemplate());
   v8::Context::Scope context_scope(context);
-  v8::Local<v8::String> source = v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), raw_source);
+  v8::Local<v8::String> source = v8::String::NewFromUtf8(
+    v8::Isolate::GetCurrent(), raw_source);
   v8::Local<v8::Script> script = v8::Script::Compile(source);
+
   script->Run();
 }
 
