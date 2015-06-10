@@ -21,6 +21,7 @@
         './test-engine.cc',
         './test-fcontext.cc',
         './test-objcontext.cc',
+        './test-value.cc',
       ],
       'conditions': [
         ['bastian_engine == "v8"', {

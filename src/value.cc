@@ -29,6 +29,10 @@ namespace bastian {
 //
 
 
+bool Value::IsFunction() {
+  return type_ == FUNCTION;
+}
+
 bool Value::IsNumber() {
   return type_ == NUMBER;
 }
@@ -137,6 +141,8 @@ Handle<Value> Value::New(const v8::Local<v8::Value>& v8_value) {
     v8_string->WriteUtf8(utf8_buffer, str_size);
     result = String::New(utf8_buffer);
     std::free(utf8_buffer);
+  } else if (v8_value->IsFunction()) {
+    result = Function::New(v8::Local<v8::Function>::Cast(v8_value));
   }
 
   return result;
@@ -211,6 +217,47 @@ JSValueRef Value::Extract(JSContextRef context_ref) {
   }
 
   return result;
+}
+
+#endif
+
+
+//
+// Common Function
+//
+
+double Function::NumberValue() {
+  return -1;
+}
+
+std::string Function::StringValue() {
+  return "";
+}
+
+
+//
+// V8 Function
+//
+
+#ifdef BASTIAN_V8
+
+Function::Function(const v8::Local<v8::Function>& v8_function) {
+  v8_function_.Reset(v8::Isolate::GetCurrent(), v8_function);
+}
+
+Handle<Value> Function::New(const v8::Local<v8::Function>& v8_function) {
+  Handle<Value> function(reinterpret_cast<Value*>(new Function (v8_function)));
+  return function;
+}
+
+void Function::Call() {
+  v8::Local<v8::Function> function = v8::Local<v8::Function>::New(v8::Isolate::GetCurrent(), v8_function_);
+  v8::Local<v8::Value> args[0];
+  v8::Local<v8::ObjectTemplate> tpl = v8::ObjectTemplate::New(v8::Isolate::GetCurrent());
+  v8::Local<v8::Context> context = v8::Context::New(v8::Isolate::GetCurrent(), NULL, tpl); 
+  v8::Context::Scope context_scope(context);
+
+  function->Call(context->Global(), 0, args);
 }
 
 #endif

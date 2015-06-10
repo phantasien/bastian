@@ -38,67 +38,87 @@ namespace bastian {
 
 class Value {
  public:
-    enum Type {
-        NUL,
-        NUMBER,
-        STRING,
-        UNDEFINED
-    };
+  enum Type {
+    FUNCTION,
+    NUL,
+    NUMBER,
+    STRING,
+    UNDEFINED
+  };
 
-    bool IsNumber();
-    bool IsNull();
-    bool IsString();
-    bool IsUndefined();
-    virtual double NumberValue() = 0;
-    virtual std::string StringValue() = 0;
+  bool IsFunction();
+  bool IsNumber();
+  bool IsNull();
+  bool IsString();
+  bool IsUndefined();
+  virtual double NumberValue() = 0;
+  virtual std::string StringValue() = 0;
+  virtual void Call() {}
+
 
 #ifdef BASTIAN_V8
-    static Handle<Value> New(const v8::Local<v8::Value>&);
-    v8::Local<v8::Value> Extract();
+  static Handle<Value> New(const v8::Local<v8::Value>&);
+  v8::Local<v8::Value> Extract();
 #endif
 
 #ifdef BASTIAN_JSC
-    static Handle<Value> New(
-        JSContextRef context_ref,
-        JSValueRef jsc_value,
-        JSValueRef* exception_ref);
-    JSValueRef Extract(JSContextRef context_ref);
+  static Handle<Value> New(
+    JSContextRef context_ref,
+    JSValueRef jsc_value,
+    JSValueRef* exception_ref);
+  JSValueRef Extract(JSContextRef context_ref);
 #endif
 
  protected:
-    Type type_;
+  Type type_;
 };
 
-class NullValue : Value {
+class NullValue : public Value {
  public:
-    static Handle<Value> New();
-    double NumberValue();
-    std::string StringValue();
+  static Handle<Value> New();
+  double NumberValue();
+  std::string StringValue();
 
  private:
-    NullValue();
+  NullValue();
 };
 
-class Number : Value {
+class Number : public Value {
  public:
-    static Handle<Value> New(double val);
-    double NumberValue();
-    std::string StringValue();
+  static Handle<Value> New(double val);
+  double NumberValue();
+  std::string StringValue();
 
  private:
-    explicit Number(double val);
-    double val_;
+  explicit Number(double val);
+  double val_;
 };
 
-class String : Value {
+class String : public Value {
  public:
-    static Handle<Value> New(const std::string& val);
-    double NumberValue();
-    std::string StringValue();
+  static Handle<Value> New(const std::string& val);
+  double NumberValue();
+  std::string StringValue();
 
  private:
-    explicit String(const std::string& val);
-    std::string val_;
+  explicit String(const std::string& val);
+  std::string val_;
+};
+
+class Function : public Value {
+ public:
+#ifdef BASTIAN_V8
+  static Handle<Value> New(const v8::Local<v8::Function>&);
+#endif
+  double NumberValue();
+  std::string StringValue();
+
+  void Call();
+ private:
+#ifdef BASTIAN_V8
+  Function(const v8::Local<v8::Function>&);
+  v8::Persistent<v8::Function> v8_function_;
+#endif
 };
 
 }  // namespace bastian
