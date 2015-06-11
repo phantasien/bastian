@@ -41,3 +41,16 @@ TEST(FUNCTION_CONTEXT_TEST_SUITE, DifferentScope) {
   EXPECT_EQ(0, result->NumberValue());
 }
 
+TEST(FUNCTION_CONTEXT_TEST_SUITE, ScriptNumberResult) {
+  bastian::Handle<bastian::Engine> engine = bastian::Engine::New(Global);
+  bastian::Handle<bastian::Value> local_result = engine->Run("42");
+  EXPECT_EQ(42, local_result->NumberValue());
+}
+
+TEST(FUNCTION_CONTEXT_TEST_SUITE, ScriptFunctionResult) {
+  bastian::Handle<bastian::Engine> engine = bastian::Engine::New(Global);
+  bastian::Handle<bastian::Value> local_result = engine->Run("(function () {collect(42);})");
+  local_result->Call();
+  EXPECT_EQ(42, result->NumberValue());
+}
+

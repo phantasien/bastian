@@ -47,7 +47,7 @@ V8Engine::V8Engine(v8_obj_generator obj_generator) {
   obj_generator_ = obj_generator;
 }
 
-void V8Engine::Run(const char * raw_source) {
+Handle<Value> V8Engine::Run(const char * raw_source) {
   Handle<V8ObjectContext> global = V8ObjectContext::New();
 
   obj_generator_(global);
@@ -61,7 +61,9 @@ void V8Engine::Run(const char * raw_source) {
     v8::Isolate::GetCurrent(), raw_source);
   v8::Local<v8::Script> script = v8::Script::Compile(source);
 
-  script->Run();
+  v8::Local<v8::Value> result = script->Run();
+
+  return Value::New(result);
 }
 
 #endif
@@ -85,7 +87,7 @@ JSCEngine::JSCEngine(jsc_obj_generator obj_generator) {
 }
 
 
-void JSCEngine::Run(const char * raw_source) {
+Handle<Value> JSCEngine::Run(const char * raw_source) {
   JSStaticValue staticValues[] = {
     { 0, 0, 0, 0 }
   };
@@ -138,7 +140,9 @@ void JSCEngine::Run(const char * raw_source) {
 
   JSStringRef script = JSStringCreateWithUTF8CString(raw_source);
   JSValueRef exception = NULL;
-  JSEvaluateScript(ctx, script, NULL, NULL, 1, &exception);
+  JSValueRef result = JSEvaluateScript(ctx, script, NULL, NULL, 1, &exception);
+
+  return Value::New(result);
 }
 
 #endif

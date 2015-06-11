@@ -37,7 +37,7 @@ namespace bastian {
 
 class Engine {
  public:
-  virtual void Run(const char *) = 0;
+  virtual Handle<Value> Run(const char *) = 0;
 
 #ifdef BASTIAN_V8
   static Handle<Engine> New(v8_obj_generator obj_generator);
@@ -58,7 +58,7 @@ class Engine {
 class V8Engine : Engine {
  public:
   explicit V8Engine(v8_obj_generator);
-  void Run(const char *);
+  Handle<Value> Run(const char *);
 
  private:
   v8_obj_generator obj_generator_;
@@ -75,7 +75,7 @@ class V8Engine : Engine {
 class JSCEngine : Engine {
  public:
   explicit JSCEngine(jsc_obj_generator);
-  void Run(const char *);
+  Handle<Value> Run(const char *);
 
  private:
   jsc_obj_generator obj_generator_;
