@@ -52,7 +52,9 @@ Handle<RunContext> RunContext::New(v8::Local<v8::Context> v8_context) {
   return context;
 }
 
-RunContext::RunContext(v8::Local<v8::Context> v8_context): v8_context_(v8_context) {}
+RunContext::RunContext(v8::Local<v8::Context> v8_context) {
+  v8_context_.Reset(v8::Isolate::GetCurrent(), v8_context);
+}
 #endif
 
 

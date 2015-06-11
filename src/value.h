@@ -66,11 +66,8 @@ class Value {
 #endif
 
 #ifdef BASTIAN_JSC
-  static Handle<Value> New(
-    JSContextRef context_ref,
-    JSValueRef jsc_value,
-    JSValueRef* exception_ref);
-  JSValueRef Extract(JSContextRef context_ref);
+  static Handle<Value> New(JSValueRef jsc_value);
+  JSValueRef Extract();
 #endif
 
  protected:

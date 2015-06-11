@@ -20,6 +20,7 @@
 
 #include "./engine.h"
 
+#include "./runcontext.h"
 #include <iostream>
 
 namespace bastian {
@@ -53,6 +54,8 @@ void V8Engine::Run(const char * raw_source) {
 
   v8::Local<v8::Context> context = v8::Context::New(
     v8::Isolate::GetCurrent(), NULL, global->ObjectTemplate());
+
+  bastian::RunContext::SetCurrent(bastian::RunContext::New(context));
   v8::Context::Scope context_scope(context);
   v8::Local<v8::String> source = v8::String::NewFromUtf8(
     v8::Isolate::GetCurrent(), raw_source);
@@ -98,6 +101,8 @@ void JSCEngine::Run(const char * raw_source) {
 
   JSClassRef globals = JSClassCreate(&globalsDefinition);
   JSContextRef ctx = JSGlobalContextCreate(globals);
+
+  bastian::RunContext::SetCurrent(bastian::RunContext::New(ctx));
 
   Handle<JSCObjectContext> new_object_ctx = JSCObjectContext::New(ctx);
   obj_generator_(new_object_ctx);

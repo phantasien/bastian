@@ -175,16 +175,16 @@ v8::Local<v8::Value> Value::Extract() {
 
 #ifdef BASTIAN_JSC
 
-Handle<Value> Value::New(
-    JSContextRef context_ref,
-    JSValueRef jsc_value,
-    JSValueRef* exception_ref) {
+Handle<Value> Value::New(JSValueRef jsc_value) {
   /****/
   Handle<Value> result = NullValue::New();
   JSStringRef jsc_string;
   JSObjectRef jsc_object;
   int str_size;
   char* utf8_buffer;
+  JSValueRef* exception_ref = 0;
+
+  JSContextRef context_ref = RunContext::GetCurrent()->jsc_context_;
 
   if (JSValueIsNumber(context_ref, jsc_value)) {
     result = Number::New(JSValueToNumber(
@@ -213,8 +213,10 @@ Handle<Value> Value::New(
   return result;
 }
 
-JSValueRef Value::Extract(JSContextRef context_ref) {
+JSValueRef Value::Extract() {
   JSValueRef result;
+  JSContextRef context_ref = RunContext::GetCurrent()->jsc_context_;
+
 
   if (IsNumber()) {
     result = JSValueMakeNumber(context_ref, NumberValue());
@@ -265,9 +267,7 @@ void Function::Call(const std::vector<Handle<Value>>& arguments) {
   v8::Local<v8::Value> * args = static_cast<v8::Local<v8::Value> *> (malloc(arguments.size() * sizeof(v8::Local<v8::Value>)));
 
   v8::Local<v8::Function> function = v8::Local<v8::Function>::New(v8::Isolate::GetCurrent(), v8_function_);
-  v8::Local<v8::ObjectTemplate> tpl = v8::ObjectTemplate::New(v8::Isolate::GetCurrent());
-  v8::Local<v8::Context> context = v8::Context::New(v8::Isolate::GetCurrent(), NULL, tpl); 
-  v8::Context::Scope context_scope(context);
+  v8::Local<v8::Context> context =  v8::Local<v8::Context>::New(v8::Isolate::GetCurrent(), RunContext::GetCurrent()->v8_context_); 
 
   for (unsigned index = 0; index < arguments.size(); ++index) {
     args[index] = arguments.at(index)->Extract();
@@ -305,7 +305,7 @@ void Function::Call(const std::vector<Handle<Value>>& arguments) {
   JSObjectRef global = JSContextGetGlobalObject(context_ref);
 
   for (unsigned index = 0; index < arguments.size(); ++index) {
-    args[index] = arguments.at(index)->Extract(context_ref);
+    args[index] = arguments.at(index)->Extract();
   }
 
   JSObjectCallAsFunction(context_ref, jsc_object_, global, arguments.size(), args, exception);

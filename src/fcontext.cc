@@ -94,17 +94,14 @@ Handle<Value> JSCFunctionContext::GetArgument(int index) {
   Handle<Value> argument = NullValue::New();
 
   if (argument_count_ > index) {
-    argument = Value::New(
-      context_ref_,
-      arguments_ref_[index],
-      exception_ref_);
+    argument = Value::New(arguments_ref_[index]);
   }
 
   return argument;
 }
 
 void JSCFunctionContext::SetResult(Handle<Value> val) {
-  result_ref_ = val->Extract(context_ref_);
+  result_ref_ = val->Extract();
 }
 
 JSValueRef JSCFunctionContext::ResultRef() {
