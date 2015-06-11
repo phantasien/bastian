@@ -204,7 +204,7 @@ Handle<Value> Value::New(
     jsc_object = JSValueToObject(context_ref, jsc_value, NULL);
 
     if (JSObjectIsFunction(context_ref, jsc_object)) {
-      result = Function::New(context_ref, jsc_object);
+      result = Function::New(jsc_object);
     }
   }
 
@@ -259,14 +259,21 @@ Handle<Value> Function::New(const v8::Local<v8::Function>& v8_function) {
   return function;
 }
 
-void Function::Call() {
+void Function::Call(const std::vector<Handle<Value>>& arguments) {
+  v8::Local<v8::Value> * args = static_cast<v8::Local<v8::Value> *> (malloc(arguments.size() * sizeof(v8::Local<v8::Value>)));
+
   v8::Local<v8::Function> function = v8::Local<v8::Function>::New(v8::Isolate::GetCurrent(), v8_function_);
-  v8::Local<v8::Value> args[0];
   v8::Local<v8::ObjectTemplate> tpl = v8::ObjectTemplate::New(v8::Isolate::GetCurrent());
   v8::Local<v8::Context> context = v8::Context::New(v8::Isolate::GetCurrent(), NULL, tpl); 
   v8::Context::Scope context_scope(context);
 
-  function->Call(context->Global(), 0, args);
+  for (unsigned index = 0; index < arguments.size(); ++index) {
+    args[index] = arguments.at(index)->Extract();
+  }
+
+  function->Call(context->Global(), arguments.size(), args);
+
+  free(args);
 }
 
 #endif
@@ -277,18 +284,19 @@ void Function::Call() {
 
 #ifdef BASTIAN_JSC
 
-Function::Function(JSContextRef context_ref, JSObjectRef jsc_object)
-    : context_ref_(context_ref), jsc_object_(jsc_object) {
+Function::Function(JSObjectRef jsc_object) : jsc_object_(jsc_object) {
   type_ = FUNCTION;
 }
 
-Handle<Value> Function::New(JSContextRef context_ref, JSObjectRef jsc_object) {
-  Handle<Value> function(reinterpret_cast<Value*>(new Function (context_ref, jsc_object)));
+Handle<Value> Function::New(JSObjectRef jsc_object) {
+  Handle<Value> function(reinterpret_cast<Value*>(new Function (jsc_object)));
   return function;
 }
 
-void Function::Call() {
+void Function::Call(const std::vector<Handle<Value>>& arguments) {
   /* Generate void context for function */
+
+  JSValueRef * args = static_cast<JSValueRef *> (malloc(arguments.size() * sizeof(JSValueRef)));
 
   JSStaticValue staticValues[] = {
     { 0, 0, 0, 0 }
@@ -304,12 +312,18 @@ void Function::Call() {
   };
 
   JSClassRef globals = JSClassCreate(&globalsDefinition);
-  JSContextRef ctx = JSGlobalContextCreate(globals);
+  JSContextRef context_ref = JSGlobalContextCreate(globals);
 
   JSValueRef* exception = 0;
-  JSObjectRef global = JSContextGetGlobalObject(ctx);
-  JSValueRef args[0];
-  JSObjectCallAsFunction(ctx, jsc_object_, global, 0, args, exception);
+  JSObjectRef global = JSContextGetGlobalObject(context_ref);
+
+  for (unsigned index = 0; index < arguments.size(); ++index) {
+    args[index] = arguments.at(index)->Extract(context_ref);
+  }
+
+  JSObjectCallAsFunction(context_ref, jsc_object_, global, arguments.size(), args, exception);
+
+  free(args);
 }
 
 #endif

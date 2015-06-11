@@ -22,6 +22,7 @@
 #define BASTIAN_VALUE_H_
 
 #include <string>
+#include <vector>
 
 #include "./handle.h"
 
@@ -53,8 +54,11 @@ class Value {
   bool IsUndefined();
   virtual double NumberValue() = 0;
   virtual std::string StringValue() = 0;
-  virtual void Call() {}
-
+  virtual void Call(const std::vector<Handle<Value>>& arguments) {}
+  virtual void Call() {
+    std::vector<Handle<Value>> arguments;
+    Call(arguments);
+  }
 
 #ifdef BASTIAN_V8
   static Handle<Value> New(const v8::Local<v8::Value>&);
@@ -111,22 +115,21 @@ class Function : public Value {
   static Handle<Value> New(const v8::Local<v8::Function>&);
 #endif
 #ifdef BASTIAN_JSC
-  static Handle<Value> New(JSContextRef context_ref, JSObjectRef jsc_object);
+  static Handle<Value> New(JSObjectRef jsc_object);
 #endif
 
   double NumberValue();
   std::string StringValue();
 
-  void Call();
+  void Call(const std::vector<Handle<Value>>& arguments);
  private:
 #ifdef BASTIAN_V8
   Function(const v8::Local<v8::Function>&);
   v8::Persistent<v8::Function> v8_function_;
 #endif
 #ifdef BASTIAN_JSC
-  Function(JSContextRef context_ref, JSObjectRef jsc_object);
+  Function(JSObjectRef jsc_object);
   JSObjectRef jsc_object_;
-  JSContextRef context_ref_;
 #endif
 };
 
