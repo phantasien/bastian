@@ -12,7 +12,6 @@
 #define VALUE_TEST_SUITE JSCValue
 #endif
 
-static int argsCount = 0;
 static bastian::Handle<bastian::Value> result = bastian::NullValue::New();
 static bastian::Handle<bastian::Value> result2 = bastian::NullValue::New();
 
@@ -36,7 +35,7 @@ TEST(VALUE_TEST_SUITE, CallFunctionOnce) {
   TestContext testContext;
   testContext.AddFunction("collect", CollectValueResult);
   testContext.AddFunction("collect2", CollectValueResult2);
-  testContext.RunJS("collect(function () {collect2(42)})");
+  testContext.RunJS("collect(function toto() {collect2(42)})");
   result->Call();
   EXPECT_EQ(42, result2->NumberValue());
 }

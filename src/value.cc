@@ -288,7 +288,28 @@ Handle<Value> Function::New(JSContextRef context_ref, JSObjectRef jsc_object) {
 }
 
 void Function::Call() {
-  // JSObjectCallAsFunction(context_ref_, jsc_object_, jsc_object_, 0, NULL, NULL);
+  /* Generate void context for function */
+
+  JSStaticValue staticValues[] = {
+    { 0, 0, 0, 0 }
+  };
+
+  JSStaticFunction staticFunctions[] = {
+      { 0, 0, 0 }
+  };
+
+  JSClassDefinition globalsDefinition = {
+      0, kJSClassAttributeNone, "globals", 0, staticValues, staticFunctions,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+  };
+
+  JSClassRef globals = JSClassCreate(&globalsDefinition);
+  JSContextRef ctx = JSGlobalContextCreate(globals);
+
+  JSValueRef* exception = 0;
+  JSObjectRef global = JSContextGetGlobalObject(ctx);
+  JSValueRef args[0];
+  JSObjectCallAsFunction(ctx, jsc_object_, global, 0, args, exception);
 }
 
 #endif

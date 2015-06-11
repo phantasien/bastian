@@ -15,6 +15,7 @@ SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 BASTIAN_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))
 V8_ROOT = os.path.join(BASTIAN_ROOT, 'deps', 'v8')
 GYP_DEFINE_PATTERN = re.compile(r'\-D([\w_]+)=(.+)')
+GYP_FORMAT_PATTERN = re.compile(r'\-\-format=(.+)')
 
 def run_gyp(args):
   import gyp
@@ -26,10 +27,13 @@ def run_gyp(args):
     sys.exit(rc)
 
 def parse_arg(ctx, arg):
+  format_match = GYP_FORMAT_PATTERN.match(arg)
   def_match = GYP_DEFINE_PATTERN.match(arg)
 
   if def_match is not None:
     ctx[def_match.group(1)] = def_match.group(2)
+  elif format_match is not None:
+    ctx['format'] = format_match.group(1)
 
   return arg
 
@@ -101,5 +105,5 @@ if __name__ == '__main__':
   args.append('-Dv8_enable_i18n_support=0')
   args.append('-Dlibrary=static_library')
 
-  args.append('--format=' + make_format)
+  args.append('--format=' + (make_format if not 'format' in ctx else ctx['format']))
   run_gyp(args)
