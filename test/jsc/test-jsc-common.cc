@@ -36,6 +36,9 @@ void TestContext::RunJS(const char * rawSource) {
 
   JSClassRef globals = JSClassCreate(&globalsDefinition);
   JSContextRef ctx = JSGlobalContextCreate(globals);
+
+  bastian::RunContext::SetCurrent(bastian::RunContext::New(ctx));
+
   JSStringRef script = JSStringCreateWithUTF8CString(rawSource);
   JSValueRef exception = NULL;
   JSEvaluateScript(ctx, script, NULL, NULL, 1, &exception);

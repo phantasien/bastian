@@ -19,6 +19,8 @@
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "./value.h"
+
+#include "./runcontext.h"
 #include <cstdlib>
 
 
@@ -297,22 +299,7 @@ void Function::Call(const std::vector<Handle<Value>>& arguments) {
   /* Generate void context for function */
 
   JSValueRef * args = static_cast<JSValueRef *> (malloc(arguments.size() * sizeof(JSValueRef)));
-
-  JSStaticValue staticValues[] = {
-    { 0, 0, 0, 0 }
-  };
-
-  JSStaticFunction staticFunctions[] = {
-      { 0, 0, 0 }
-  };
-
-  JSClassDefinition globalsDefinition = {
-      0, kJSClassAttributeNone, "globals", 0, staticValues, staticFunctions,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-  };
-
-  JSClassRef globals = JSClassCreate(&globalsDefinition);
-  JSContextRef context_ref = JSGlobalContextCreate(globals);
+  JSContextRef context_ref = RunContext::GetCurrent()->jsc_context_;
 
   JSValueRef* exception = 0;
   JSObjectRef global = JSContextGetGlobalObject(context_ref);

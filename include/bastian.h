@@ -5,6 +5,7 @@
 #include "../src/fcontext.h"
 #include "../src/handle.h"
 #include "../src/objcontext.h"
+#include "../src/runcontext.h"
 #include "../src/value.h"
 
 #endif  // BASTIAN_ROOT_H_
