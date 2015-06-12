@@ -18,11 +18,11 @@ BASTIAN_FUNCTION(CollectObjContextResult) (bastian::FunctionRef func) {
   result = func->GetArgument(0);
 }
 
-BASTIAN_OBJ(Child) {
+BASTIAN_OBJECT(Child) (bastian::ObjectRef obj) {
   obj->Export("collect", CollectObjContextResult);
 }
 
-BASTIAN_OBJ(Wrapper) {
+BASTIAN_OBJECT(Wrapper) (bastian::ObjectRef obj) {
   obj->Export("child", Child); 
 }
 

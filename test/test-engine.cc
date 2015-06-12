@@ -15,11 +15,11 @@ BASTIAN_FUNCTION(CollectEngineResult) (bastian::FunctionRef func) {
   result = func->GetArgument(0);
 }
 
-BASTIAN_OBJ(Util) {
+BASTIAN_OBJECT(Util) (bastian::ObjectRef obj) {
   obj->Export("collect", CollectEngineResult);
 }
 
-BASTIAN_OBJ(Global) {
+BASTIAN_OBJECT(Global) (bastian::ObjectRef obj) {
   obj->Export("collect", CollectEngineResult);
   obj->Export("util", Util);
 }

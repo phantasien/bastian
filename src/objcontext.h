@@ -56,10 +56,8 @@ class V8ObjectContext {
     v8::Handle<v8::ObjectTemplate> obj_template_;
 };
 
-
-
-#define BASTIAN_OBJ(ObjName) \
-void ObjName(bastian::Handle<bastian::V8ObjectContext> obj)
+typedef Handle<V8ObjectContext> ObjectRef;
+#define BASTIAN_OBJECT(ObjName) void ObjName
 
 #endif
 
@@ -116,9 +114,8 @@ class JSCObjectContext {
     const char * name_;
 };
 
-
-#define BASTIAN_OBJ(ObjName) \
-void ObjName(bastian::Handle<bastian::JSCObjectContext> obj)
+typedef Handle<JSCObjectContext> ObjectRef;
+#define BASTIAN_OBJECT(ObjName) void ObjName
 
 #endif
 

@@ -60,7 +60,7 @@ class V8FunctionContext : FunctionContext {
     const v8::FunctionCallbackInfo<v8::Value>* infos_;
 };
 
-#define FunctionRef Handle<bastian::V8FunctionContext>
+typedef Handle<bastian::V8FunctionContext> FunctionRef;
 
 #define BASTIAN_FUNCTION(FuncName) \
 void WRAPPED_FUNCTION_NAME(FuncName) (bastian::FunctionRef); \
@@ -116,7 +116,7 @@ class JSCFunctionContext : FunctionContext {
     JSValueRef result_ref_;
 };
 
-#define FunctionRef Handle<bastian::JSCFunctionContext>
+typedef Handle<bastian::JSCFunctionContext> FunctionRef;
 
 #define BASTIAN_FUNCTION(FuncName) \
 void WRAPPED_FUNCTION_NAME(FuncName) (bastian::FunctionRef); \
