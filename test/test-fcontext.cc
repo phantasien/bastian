@@ -15,11 +15,11 @@
 static int argsCount = 0;
 static bastian::Handle<bastian::Value> result = bastian::NullValue::New();
 
-BASTIAN_FUNC(CountArgs) {
+BASTIAN_FUNCTION(CountArgs) (bastian::FunctionRef func) {
   argsCount = func->ArgsCount();
 }
 
-BASTIAN_FUNC(Add) {
+BASTIAN_FUNCTION(Add) (bastian::FunctionRef func) {
   double val1 = func->GetArgument(0)->NumberValue();
   double val2 = func->GetArgument(1)->NumberValue();
   bastian::Handle<bastian::Value> total = bastian::Number::New(val1 + val2);
@@ -27,7 +27,7 @@ BASTIAN_FUNC(Add) {
   func->SetResult(total);
 }
 
-BASTIAN_FUNC(Concat) {
+BASTIAN_FUNCTION(Concat) (bastian::FunctionRef func) {
   std::string str1 = func->GetArgument(0)->StringValue();
   std::string str2 = func->GetArgument(1)->StringValue();
   bastian::Handle<bastian::Value> concat = bastian::String::New(str1 + str2);
@@ -36,7 +36,7 @@ BASTIAN_FUNC(Concat) {
 }
 
 
-BASTIAN_FUNC(CollectFContextResult) {
+BASTIAN_FUNCTION(CollectFContextResult) (bastian::FunctionRef func) {
   result = func->GetArgument(0);
 }
 

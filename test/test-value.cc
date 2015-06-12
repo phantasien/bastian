@@ -15,11 +15,11 @@
 static bastian::Handle<bastian::Value> result = bastian::NullValue::New();
 static bastian::Handle<bastian::Value> result2 = bastian::NullValue::New();
 
-BASTIAN_FUNC(CollectValueResult) {
+BASTIAN_FUNCTION(CollectValueResult) (bastian::FunctionRef func) {
   result = func->GetArgument(0);
 }
 
-BASTIAN_FUNC(CollectValueResult2) {
+BASTIAN_FUNCTION(CollectValueResult2) (bastian::FunctionRef func) {
   result2 = func->GetArgument(0);
 }
 

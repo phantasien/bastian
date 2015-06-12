@@ -11,7 +11,7 @@
 
 static bastian::Handle<bastian::Value> result = bastian::NullValue::New();
 
-BASTIAN_FUNC(CollectEngineResult) {
+BASTIAN_FUNCTION(CollectEngineResult) (bastian::FunctionRef func) {
   result = func->GetArgument(0);
 }
 

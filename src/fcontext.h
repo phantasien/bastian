@@ -35,7 +35,7 @@ class FunctionContext {
     virtual void SetResult(Handle<Value> result) = 0;
 };
 
-#define WRAPPED_FUNC_NAME(FuncName) Wrapped ## FuncName
+#define WRAPPED_FUNCTION_NAME(FuncName) Wrapped ## FuncName
 
 
 //
@@ -60,18 +60,18 @@ class V8FunctionContext : FunctionContext {
     const v8::FunctionCallbackInfo<v8::Value>* infos_;
 };
 
+#define FunctionRef Handle<bastian::V8FunctionContext>
 
-#define BASTIAN_FUNC(FuncName) \
-void WRAPPED_FUNC_NAME(FuncName)( \
-  bastian::Handle<bastian::V8FunctionContext> func); \
+#define BASTIAN_FUNCTION(FuncName) \
+void WRAPPED_FUNCTION_NAME(FuncName) (bastian::FunctionRef); \
 void FuncName(const v8::FunctionCallbackInfo<v8::Value>& infos) { \
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent()); \
   bastian::Handle<bastian::V8FunctionContext> ctx \
     = bastian::V8FunctionContext::New(infos); \
-  WRAPPED_FUNC_NAME(FuncName)(ctx); \
+  WRAPPED_FUNCTION_NAME(FuncName)(ctx); \
 } \
-void WRAPPED_FUNC_NAME(FuncName)( \
-  bastian::Handle<bastian::V8FunctionContext> func)
+void WRAPPED_FUNCTION_NAME(FuncName)
+
 
 
 #endif
@@ -116,9 +116,10 @@ class JSCFunctionContext : FunctionContext {
     JSValueRef result_ref_;
 };
 
-#define BASTIAN_FUNC(FuncName) \
-void WRAPPED_FUNC_NAME(FuncName)( \
-  bastian::Handle<bastian::JSCFunctionContext> func); \
+#define FunctionRef Handle<bastian::JSCFunctionContext>
+
+#define BASTIAN_FUNCTION(FuncName) \
+void WRAPPED_FUNCTION_NAME(FuncName) (bastian::FunctionRef); \
 JSValueRef FuncName( \
     JSContextRef context_ref, \
     JSObjectRef function_ref, \
@@ -134,11 +135,11 @@ JSValueRef FuncName( \
     argument_count, \
     arguments_ref, \
     exception_ref); \
-  WRAPPED_FUNC_NAME(FuncName)(ctx); \
+  WRAPPED_FUNCTION_NAME(FuncName)(ctx); \
   return ctx->ResultRef(); \
 } \
-void WRAPPED_FUNC_NAME(FuncName)( \
-  bastian::Handle<bastian::JSCFunctionContext> func)
+void WRAPPED_FUNCTION_NAME(FuncName)
+
 
 #endif
 
