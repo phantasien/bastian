@@ -25,9 +25,9 @@
 
 
 BASTIAN_PROPERTY(Foobar) (bastian::PropertyRef property) {
-  if (property->HasSetValue()) {
-    property->Set(property->Value());
-  } else if (property->Value()->IsUndefined()) {
+  if (property->SetValue()-IsUndefined()) {
+    property->Set(property->SetValue());
+  } else if (property->Val()->IsUndefined()) {
     property->Set(Number::New(42));
   }
 }
@@ -49,9 +49,12 @@ namespace bastian {
 
 class PropertyContext {
  public:
-  bool HasSetValue();
-  void Set(Handle<Value> value);
-  Handle<Value> Value();
+  virtual void Set(Handle<Value> value);
+  virtual Handle<Value> SetValue();
+  virtual Handle<Value> Val();
+ private:
+  Handle<Value> value_;
+  Handle<Value> set_value_;
 };
 
 }
