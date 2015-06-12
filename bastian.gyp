@@ -27,6 +27,7 @@
         'src/engine.cc',
         'src/fcontext.cc',
         'src/objcontext.cc',
+        'src/propcontext.cc',
         'src/runcontext.cc',
         'src/value.cc'
       ]
