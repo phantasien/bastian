@@ -39,6 +39,10 @@ class Handle {
     return *this;
   }
 
+  inline explicit Handle() {
+    resource_ = NULL;
+  }
+
   inline explicit Handle(ResourceType* resource) {
     resource_ = resource;
   }

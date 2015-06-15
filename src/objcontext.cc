@@ -145,14 +145,27 @@ void JSCObjectContext::Patch() {
         func_export.func),
       NULL,
       0);
-  }  
+  }
+
+  for (int index = 0; index < values_.size(); ++index) {
+    jsc_value_export value_export = values_.at(index);
+    JSObjectSetProperty(
+      context_ref_,
+      object_ref_,
+      JSStringCreateWithUTF8CString(value_export.export_name),
+      value_export.value->Extract(),
+      NULL,
+      0);
+  } 
 }
 
 
 void JSCObjectContext::Export(const char * export_name, Handle<Value> value) {
-
+  jsc_value_export value_export;
+  value_export.export_name = export_name;
+  value_export.value = value;
+  values_.push_back(value_export);
 }
-
 
 Handle<JSCObjectContext> JSCObjectContext::New(JSContextRef context_ref) {
   Handle<JSCObjectContext> handle(new JSCObjectContext(context_ref));

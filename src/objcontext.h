@@ -89,6 +89,11 @@ typedef struct t_jsc_func_export {
   const char * export_name;
 } jsc_func_export;
 
+typedef struct t_jsc_value_export {
+  Handle<Value> value;
+  const char * export_name;
+} jsc_value_export;
+
 class JSCObjectContext;
 class JSCEngine;
 
@@ -118,8 +123,9 @@ class JSCObjectContext {
     JSContextRef context_ref_;
     std::vector<jsc_func_export> functions_;
     std::vector< Handle<JSCObjectContext> > objects_;
-    const char * name_;
+    std::vector<jsc_value_export> values_;
 
+    const char * name_;
     static JSClassDefinition void_class_def_;
 };
 

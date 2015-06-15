@@ -86,7 +86,6 @@ JSCEngine::JSCEngine(jsc_obj_generator obj_generator) {
   obj_generator_ = obj_generator;
 }
 
-
 Handle<Value> JSCEngine::Run(const char * raw_source) {
   JSClassRef globals = JSClassCreate(&JSCObjectContext::void_class_def_);
   JSContextRef ctx = JSGlobalContextCreate(globals);
