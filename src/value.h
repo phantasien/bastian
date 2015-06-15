@@ -43,6 +43,7 @@ class Value {
     FUNCTION,
     NUL,
     NUMBER,
+    OBJECT,
     STRING,
     UNDEFINED
   };
@@ -52,8 +53,8 @@ class Value {
   bool IsNull();
   bool IsString();
   bool IsUndefined();
-  virtual double NumberValue() = 0;
-  virtual std::string StringValue() = 0;
+  virtual double NumberValue() {return -1; };
+  virtual std::string StringValue() { return ""; };
   virtual void Call(const std::vector<Handle<Value>>& arguments) {}
   virtual void Call() {
     std::vector<Handle<Value>> arguments;
@@ -77,8 +78,6 @@ class Value {
 class NullValue : public Value {
  public:
   static Handle<Value> New();
-  double NumberValue();
-  std::string StringValue();
 
  private:
   NullValue();
@@ -88,7 +87,6 @@ class Number : public Value {
  public:
   static Handle<Value> New(double val);
   double NumberValue();
-  std::string StringValue();
 
  private:
   explicit Number(double val);
@@ -98,7 +96,6 @@ class Number : public Value {
 class String : public Value {
  public:
   static Handle<Value> New(const std::string& val);
-  double NumberValue();
   std::string StringValue();
 
  private:
@@ -114,9 +111,6 @@ class Function : public Value {
 #ifdef BASTIAN_JSC
   static Handle<Value> New(JSObjectRef jsc_object);
 #endif
-
-  double NumberValue();
-  std::string StringValue();
 
   void Call(const std::vector<Handle<Value>>& arguments);
  private:

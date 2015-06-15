@@ -61,14 +61,6 @@ NullValue::NullValue() {
   type_ = NUL;
 }
 
-double NullValue::NumberValue() {
-  return -1;
-}
-
-std::string NullValue::StringValue() {
-  return "";
-}
-
 Handle<Value> NullValue::New() {
   Handle<Value> value(reinterpret_cast<Value*>(new NullValue()));
   return value;
@@ -88,10 +80,6 @@ double Number::NumberValue() {
   return val_;
 }
 
-std::string Number::StringValue() {
-  return "";
-}
-
 Handle<Value> Number::New(double val) {
   Handle<Value> value(reinterpret_cast<Value*>(new Number(val)));
   return value;
@@ -105,10 +93,6 @@ Handle<Value> Number::New(double val) {
 String::String(const std::string& val) {
   type_ = STRING;
   val_ = val;
-}
-
-double String::NumberValue() {
-  return -1;
 }
 
 std::string String::StringValue() {
@@ -232,19 +216,6 @@ JSValueRef Value::Extract() {
 }
 
 #endif
-
-
-//
-// Common Function
-//
-
-double Function::NumberValue() {
-  return -1;
-}
-
-std::string Function::StringValue() {
-  return "";
-}
 
 
 //
