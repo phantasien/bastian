@@ -24,6 +24,7 @@
 #include <vector>
 #include "./fcontext.h"
 #include "./handle.h"
+#include "./value.h"
 
 namespace bastian {
 
@@ -48,6 +49,9 @@ class V8ObjectContext {
     void Export(
         const char * export_name,
         v8_obj_generator obj_generator);
+    void Export(
+        const char * export_name,
+        Handle<Value> value);
     v8::Handle<v8::ObjectTemplate> ObjectTemplate();
 
     static Handle<V8ObjectContext> New();
@@ -102,16 +106,20 @@ class JSCObjectContext {
     void Export(
         const char * export_name,
         jsc_obj_generator obj_generator);
+    void Export(
+        const char * export_name,
+        Handle<Value> value);
     void Build(const char * name);
     JSObjectRef object_ref_;
 
     static Handle<JSCObjectContext> New(JSContextRef);
-
  private:
     JSContextRef context_ref_;
     std::vector<jsc_func_export> functions_;
     std::vector< Handle<JSCObjectContext> > objects_;
     const char * name_;
+
+    static JSClassDefinition void_class_def_;
 };
 
 typedef Handle<JSCObjectContext> ObjectRef;

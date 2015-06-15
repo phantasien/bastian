@@ -57,6 +57,13 @@ void V8ObjectContext::Export(
     new_object_ctx->obj_template_);
 }
 
+void V8ObjectContext::Export(const char * export_name, Handle<Value> value) {
+  obj_template_->Set(
+    v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), export_name),
+    value->Extract());
+}
+
+
 Handle<V8ObjectContext> V8ObjectContext::New() {
   Handle<V8ObjectContext> handle(new V8ObjectContext());
   return handle;
@@ -71,6 +78,21 @@ Handle<V8ObjectContext> V8ObjectContext::New() {
 
 
 #ifdef BASTIAN_JSC
+
+
+static JSStaticFunction void_static_functions[] = {
+    { 0, 0, 0 }
+};
+
+static JSStaticValue void_static_variables[] = {
+  { 0, 0, 0, 0 }
+};
+
+JSClassDefinition JSCObjectContext::void_class_def_ = {
+    0, kJSClassAttributeNone, "Native Object", 0,
+    void_static_variables, void_static_functions,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+};
 
 JSCObjectContext::JSCObjectContext(JSContextRef context_ref) {
   context_ref_ = context_ref;
@@ -93,37 +115,11 @@ void JSCObjectContext::Export(
 }
 
 void JSCObjectContext::Build(const char * name) {
-  JSStaticFunction* static_functions;
-  JSStaticValue static_variables[] = {
-    { 0, 0, 0, 0 }
-  };
-
-  JSStaticFunction end_function = {0, 0, 0};
-
-  static_functions = static_cast<JSStaticFunction*>(
-    std::malloc((functions_.size() + 1) * sizeof(JSStaticFunction)));
-
   name_ = name;
 
-  for (int index = 0; index < functions_.size(); index++) {
-    JSStaticFunction static_function;
-
-    static_function.name = functions_.at(index).export_name;
-    static_function.callAsFunction = functions_.at(index).func;
-    static_functions[index] = static_function;
-  }
-
-  static_functions[functions_.size()] = end_function;
-
-  JSClassDefinition class_definition = {
-      0, kJSClassAttributeNone, name, 0, static_variables, static_functions,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-  };
-
-  JSClassRef class_ref = JSClassCreate(&class_definition);
+  JSClassRef class_ref = JSClassCreate(&void_class_def_);
   object_ref_ = JSObjectMake(context_ref_, class_ref, NULL);
-  std::free(static_functions);
-
+  
   for (int index = 0; index < objects_.size(); index++) {
     JSObjectSetProperty(
       context_ref_,
@@ -133,7 +129,26 @@ void JSCObjectContext::Build(const char * name) {
       NULL,
       0);
   }
+
+  for (int index = 0; index < functions_.size(); ++index) {
+    jsc_func_export func_export = functions_.at(index);
+    JSObjectSetProperty(
+      context_ref_,
+      object_ref_,
+      JSStringCreateWithUTF8CString(func_export.export_name),
+      JSObjectMakeFunctionWithCallback(
+        context_ref_,
+        JSStringCreateWithUTF8CString(func_export.export_name),
+        func_export.func),
+      NULL,
+      0);
+  }
 }
+
+void JSCObjectContext::Export(const char * export_name, Handle<Value> value) {
+
+}
+
 
 Handle<JSCObjectContext> JSCObjectContext::New(JSContextRef context_ref) {
   Handle<JSCObjectContext> handle(new JSCObjectContext(context_ref));
