@@ -116,10 +116,13 @@ void JSCObjectContext::Export(
 
 void JSCObjectContext::Build(const char * name) {
   name_ = name;
-
   JSClassRef class_ref = JSClassCreate(&void_class_def_);
   object_ref_ = JSObjectMake(context_ref_, class_ref, NULL);
-  
+
+  Patch();
+}
+
+void JSCObjectContext::Patch() {
   for (int index = 0; index < objects_.size(); index++) {
     JSObjectSetProperty(
       context_ref_,
@@ -142,8 +145,9 @@ void JSCObjectContext::Build(const char * name) {
         func_export.func),
       NULL,
       0);
-  }
+  }  
 }
+
 
 void JSCObjectContext::Export(const char * export_name, Handle<Value> value) {
 

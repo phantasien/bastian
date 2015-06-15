@@ -110,6 +110,7 @@ class JSCObjectContext {
         const char * export_name,
         Handle<Value> value);
     void Build(const char * name);
+    void Patch();
     JSObjectRef object_ref_;
 
     static Handle<JSCObjectContext> New(JSContextRef);

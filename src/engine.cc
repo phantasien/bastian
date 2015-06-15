@@ -88,56 +88,19 @@ JSCEngine::JSCEngine(jsc_obj_generator obj_generator) {
 
 
 Handle<Value> JSCEngine::Run(const char * raw_source) {
-  JSStaticValue staticValues[] = {
-    { 0, 0, 0, 0 }
-  };
-
-  JSStaticFunction staticFunctions[] = {
-      { 0, 0, 0 }
-  };
-
-  JSClassDefinition globalsDefinition = {
-      0, kJSClassAttributeNone, "globals", 0, staticValues, staticFunctions,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-  };
-
-  JSClassRef globals = JSClassCreate(&globalsDefinition);
+  JSClassRef globals = JSClassCreate(&JSCObjectContext::void_class_def_);
   JSContextRef ctx = JSGlobalContextCreate(globals);
 
   bastian::RunContext::SetCurrent(bastian::RunContext::New(ctx));
 
   Handle<JSCObjectContext> new_object_ctx = JSCObjectContext::New(ctx);
-  obj_generator_(new_object_ctx);
-
   JSObjectRef global_object = JSContextGetGlobalObject(ctx);
 
-  for (int index = 0; index < new_object_ctx->objects_.size(); ++index) {
-    JSObjectSetProperty(
-      ctx,
-      global_object,
-      JSStringCreateWithUTF8CString(new_object_ctx->objects_.at(index)->name_),
-      new_object_ctx->objects_.at(index)->object_ref_,
-      NULL,
-      0);
-  }
+  obj_generator_(new_object_ctx);
 
-  for (int index = 0; index < new_object_ctx->functions_.size(); ++index) {
-    jsc_func_export func_export = new_object_ctx->functions_.at(index);
-    JSObjectSetProperty(
-      ctx,
-      global_object,
-      JSStringCreateWithUTF8CString(func_export.export_name),
-      JSObjectMakeFunctionWithCallback(
-        ctx,
-        JSStringCreateWithUTF8CString(func_export.export_name),
-        func_export.func),
-      NULL,
-      0);
-  }
-
-
-
-
+ 
+  new_object_ctx->object_ref_ = global_object;
+  new_object_ctx->Patch();
   JSStringRef script = JSStringCreateWithUTF8CString(raw_source);
   JSValueRef exception = NULL;
   JSValueRef result = JSEvaluateScript(ctx, script, NULL, NULL, 1, &exception);
