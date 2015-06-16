@@ -36,6 +36,7 @@ namespace bastian {
 
 class RunContext {
   friend class Function;
+  friend class Object;
   friend class Value;
 
  public:

@@ -10,6 +10,8 @@
 #endif
 
 static bastian::Handle<bastian::Value> result = bastian::NullValue::New();
+static bastian::Handle<bastian::Value> common_object = bastian::NullValue::New();
+
 
 BASTIAN_FUNCTION(CollectEngineResult) (bastian::FunctionRef func) {
   result = func->GetArgument(0);
@@ -19,7 +21,16 @@ BASTIAN_OBJECT(Util) (bastian::ObjectRef obj) {
   obj->Export("collect", CollectEngineResult);
 }
 
+BASTIAN_OBJECT(CommonObject) (bastian::ObjectRef obj) {
+  obj->Export("foobar", bastian::Number::New(42));
+}
+
 BASTIAN_OBJECT(Global) (bastian::ObjectRef obj) {
+  if (common_object->IsNull()) {
+    common_object = bastian::Object::New(CommonObject);
+  }
+
+  obj->Export("common", common_object);
   obj->Export("collect", CollectEngineResult);
   obj->Export("util", Util);
   obj->Export("foobar", bastian::Number::New(42));
@@ -58,6 +69,12 @@ TEST(ENGINE_TEST_SUITE, ScriptFunctionResult) {
 TEST(ENGINE_TEST_SUITE, SetStaticValue) {
   bastian::Handle<bastian::Engine> engine = bastian::Engine::New(Global);
   bastian::Handle<bastian::Value> local_result = engine->Run("foobar");
-
   EXPECT_EQ(42, local_result->NumberValue());
 }
+
+TEST(ENGINE_TEST_SUITE, PreconstructedObject) {
+  bastian::Handle<bastian::Engine> engine = bastian::Engine::New(Global);
+  bastian::Handle<bastian::Value> local_result = engine->Run("common.foobar");
+  EXPECT_EQ(42, local_result->NumberValue());
+}
+

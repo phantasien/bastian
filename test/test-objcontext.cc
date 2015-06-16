@@ -14,6 +14,7 @@
 
 static bastian::Handle<bastian::Value> result = bastian::NullValue::New();
 
+
 BASTIAN_FUNCTION(CollectObjContextResult) (bastian::FunctionRef func) {
   result = func->GetArgument(0);
 }

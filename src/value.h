@@ -63,7 +63,7 @@ class Value {
 
 #ifdef BASTIAN_V8
   static Handle<Value> New(const v8::Local<v8::Value>&);
-  v8::Local<v8::Value> Extract();
+  virtual v8::Local<v8::Value> Extract();
 #endif
 
 #ifdef BASTIAN_JSC
@@ -121,6 +121,19 @@ class Function : public Value {
 #ifdef BASTIAN_JSC
   Function(JSObjectRef jsc_object);
   JSObjectRef jsc_object_;
+#endif
+};
+
+class V8ObjectContext;
+
+class Object : public Value {
+ public:
+  static Handle<Value> New(void (*obj_generator)(Handle<V8ObjectContext>));
+ private:
+#ifdef BASTIAN_V8
+  Object(void (*obj_generator)(Handle<V8ObjectContext>));
+  v8::Persistent<v8::Object> v8_object_;
+  v8::Local<v8::Value> Extract();
 #endif
 };
 

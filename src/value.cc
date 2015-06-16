@@ -20,6 +20,7 @@
 
 #include "./value.h"
 
+#include "./objcontext.h"
 #include "./runcontext.h"
 #include <cstdlib>
 
@@ -283,6 +284,33 @@ void Function::Call(const std::vector<Handle<Value>>& arguments) {
 
   free(args);
 }
+
+#endif
+
+
+//
+// V8 Object
+//
+
+#ifdef BASTIAN_V8
+
+Handle<Value> Object::New(void (*obj_generator)(Handle<V8ObjectContext>)) {
+  Handle<Value> value(reinterpret_cast<Value*>(new Object(obj_generator)));
+  return value;
+}
+
+Object::Object(void (*obj_generator)(Handle<V8ObjectContext>)) {
+  Handle<V8ObjectContext> object_context = V8ObjectContext::New();
+  obj_generator(object_context);
+  v8::Local<v8::Object> local_instance = object_context->ObjectTemplate()->NewInstance();
+  v8_object_.Reset(v8::Isolate::GetCurrent(), local_instance);
+}
+
+v8::Local<v8::Value> Object::Extract() {
+  v8::Local<v8::Object> local_instance = v8::Local<v8::Object>::New(v8::Isolate::GetCurrent(), v8_object_);
+  return local_instance;
+}
+
 
 #endif
 

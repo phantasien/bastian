@@ -48,6 +48,9 @@ V8Engine::V8Engine(v8_obj_generator obj_generator) {
 }
 
 Handle<Value> V8Engine::Run(const char * raw_source) {
+  v8::Local<v8::Context> pre_context = v8::Context::New(v8::Isolate::GetCurrent());
+  v8::Context::Scope pre_context_scope(pre_context);
+
   Handle<V8ObjectContext> global = V8ObjectContext::New();
 
   obj_generator_(global);
