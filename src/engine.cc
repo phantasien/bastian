@@ -95,7 +95,7 @@ Handle<Value> JSCEngine::Run(const char * raw_source) {
 
   bastian::RunContext::SetCurrent(bastian::RunContext::New(ctx));
 
-  Handle<JSCObjectContext> new_object_ctx = JSCObjectContext::New(ctx);
+  Handle<JSCObjectContext> new_object_ctx = JSCObjectContext::New();
   JSObjectRef global_object = JSContextGetGlobalObject(ctx);
 
   obj_generator_(new_object_ctx);

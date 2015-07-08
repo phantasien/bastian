@@ -102,6 +102,7 @@ typedef void (*jsc_obj_generator)(Handle<JSCObjectContext>);
 
 class JSCObjectContext {
   friend class JSCEngine;
+  friend class Object;
 
  public:
     explicit JSCObjectContext(JSContextRef);
@@ -118,7 +119,7 @@ class JSCObjectContext {
     void Patch();
     JSObjectRef object_ref_;
 
-    static Handle<JSCObjectContext> New(JSContextRef);
+    static Handle<JSCObjectContext> New();
  private:
     JSContextRef context_ref_;
     std::vector<jsc_func_export> functions_;

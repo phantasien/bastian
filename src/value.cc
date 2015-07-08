@@ -315,4 +315,29 @@ v8::Local<v8::Value> Object::Extract() {
 #endif
 
 
+//
+// JSC Object
+//
+
+
+#ifdef BASTIAN_JSC
+
+Handle<Value> Object::New(void (*jsc_obj_generator)(Handle<JSCObjectContext>)) {
+  Handle<Value> value(reinterpret_cast<Value*>(new Object(jsc_obj_generator)));
+  return value;
+}
+
+Object::Object(void (*jsc_obj_generator)(Handle<JSCObjectContext>)) {
+  Handle<JSCObjectContext> object_context = JSCObjectContext::New();
+  jsc_obj_generator(object_context);
+  object_context->Build("Native Object");
+  jsc_object_ = object_context->object_ref_;
+}
+
+JSValueRef Object::Extract() {
+  return static_cast<JSValueRef>(jsc_object_);
+}
+
+#endif
+
 }  // namespace bastian

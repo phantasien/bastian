@@ -21,6 +21,7 @@
 
 #include <iostream>
 #include "./objcontext.h"
+#include "./runcontext.h"
 
 namespace bastian {
 
@@ -108,7 +109,7 @@ void JSCObjectContext::Export(const char * export_name, jsc_func func) {
 void JSCObjectContext::Export(
     const char * export_name,
     jsc_obj_generator obj_generator) {
-  Handle<JSCObjectContext> new_object_ctx = JSCObjectContext::New(context_ref_);
+  Handle<JSCObjectContext> new_object_ctx = JSCObjectContext::New();
   obj_generator(new_object_ctx);
   new_object_ctx->Build(export_name);
   objects_.push_back(new_object_ctx);
@@ -167,8 +168,8 @@ void JSCObjectContext::Export(const char * export_name, Handle<Value> value) {
   values_.push_back(value_export);
 }
 
-Handle<JSCObjectContext> JSCObjectContext::New(JSContextRef context_ref) {
-  Handle<JSCObjectContext> handle(new JSCObjectContext(context_ref));
+Handle<JSCObjectContext> JSCObjectContext::New() {
+  Handle<JSCObjectContext> handle(new JSCObjectContext(RunContext::GetCurrent()->jsc_context_));
   return handle;
 }
 

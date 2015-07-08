@@ -74,7 +74,7 @@ TEST(ENGINE_TEST_SUITE, SetStaticValue) {
 
 TEST(ENGINE_TEST_SUITE, PreconstructedObject) {
   bastian::Handle<bastian::Engine> engine = bastian::Engine::New(Global);
-  bastian::Handle<bastian::Value> local_result = engine->Run("common.foobar");
-  EXPECT_EQ(42, local_result->NumberValue());
+  bastian::Handle<bastian::Value> local_result = engine->Run("typeof common");
+  EXPECT_STREQ("object", local_result->StringValue().c_str());
 }
 
